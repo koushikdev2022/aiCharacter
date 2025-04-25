@@ -4,6 +4,7 @@ const router = express.Router();
 const userLoadRoute = require("./user/userLoad")
 const userAuthRoute = require("./user/authRoute");
 const charaterLoad = require("./character/characterLoad")
+const aiCharacterLoad = require("./aiCharacter/aiCharacterLoad");
 const planLoad = require("../route/plan/planLoad");
 const adminLoad = require("./admin/adminLoad")
 const slotLoad = require("./slot/slotLoad")
@@ -20,6 +21,10 @@ const defaultRoutes = [
     {
         prefix: "/",
         route: charaterLoad,
+    },
+    {
+        prefix: "/",
+        route: aiCharacterLoad,
     },
     {
         prefix: "/",
