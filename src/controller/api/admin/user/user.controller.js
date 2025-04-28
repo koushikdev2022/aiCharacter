@@ -1,4 +1,4 @@
-const { User,Transaction,Wallet,Plan,Video,Character,UserSlot } = require("../../../../models")
+const { User,Transaction,Wallet,Plan,Video,AiCharacter,UserSlot } = require("../../../../models")
 
 exports.list = async (req, res) => {
     try {
@@ -9,8 +9,8 @@ exports.list = async (req, res) => {
         const offset = (page - 1) * limit;
         const query = {
             include:[{
-                model:Character,
-                as:"Character",
+                model:AiCharacter,
+                as:"AiCharacter",
                 require:false,
             },{
                 model:UserSlot,
