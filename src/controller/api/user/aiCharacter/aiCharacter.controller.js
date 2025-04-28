@@ -127,18 +127,25 @@ exports.createCharacterStep3 = async(req,res)=>{
     try{
         const payload = req?.body;
         let updateObj;
-        if (!req.file) {
-            updateObj = {
-                avtar_goal:payload?.avatar_goal,
-                specific_campain:payload?.specific_campaign
-            }
-        }else{
-            const filePath = `uploads/character_documents/${req.user?.id || req.body.userId}/${req.file.filename}`;
-            updateObj = {
-                upload_google:filePath,
-                avtar_goal:payload?.avatar_goal,
-                specific_campain:payload?.specific_campaign
-            }
+        // if (!req.file) {
+        //     updateObj = {
+        //         upload_google:payload?.google_link,
+        //         avtar_goal:payload?.avatar_goal,
+        //         specific_campain:payload?.specific_campaign
+        //     }
+        // }else{
+        //     // const filePath = `uploads/character_documents/${req.user?.id || req.body.userId}/${req.file.filename}`;
+        //     updateObj = {
+        //         upload_google:payload?.google_link,
+        //         avtar_goal:payload?.avatar_goal,
+        //         specific_campain:payload?.specific_campaign
+        //     }
+        //     // console.log()
+        // }
+        updateObj = {
+            upload_google:payload?.google_link,
+            avtar_goal:payload?.avatar_goal,
+            specific_campain:payload?.specific_campaign
         }
         const updateStep3 = await AiCharacter.update(updateObj,{
             where:{

@@ -9,6 +9,6 @@ const step4Validation = require("../../validations/user/aiCharacter/step4Validat
 const {characterDocumentUpload} = require("../../utility/aiCharacter/documentUpload");
 aiCharacterRoute.post('/create-character-step1',isUserAuthenticateMiddleware,step1Validation,aiCharacterController.createCharacterStep1);
 aiCharacterRoute.post('/create-character-step2',isUserAuthenticateMiddleware,step2Validation,aiCharacterController.createCharacterStep2);
-aiCharacterRoute.post('/create-character-step3',isUserAuthenticateMiddleware,characterDocumentUpload.single('document_file'),step3Validation,aiCharacterController.createCharacterStep3);
+aiCharacterRoute.post('/create-character-step3',isUserAuthenticateMiddleware,step3Validation,aiCharacterController.createCharacterStep3);
 aiCharacterRoute.post('/create-character-step4',isUserAuthenticateMiddleware,step4Validation,aiCharacterController.createCharacterStep4);
 module.exports = aiCharacterRoute
