@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey:"user_id",
             as:"User"
         })
-        Group.belongsToMany(models.Character,{
+        Group.belongsToMany(models.AiCharacter,{
             foreignKey:"group_id",
-            as:"Character",
+            as:"AiCharacter",
             through:models.GroupMap
         })
         Group.hasMany(models.GroupAiMessage,{

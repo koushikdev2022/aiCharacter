@@ -7,9 +7,9 @@ module.exports = (sequelize, DataTypes) => {
   class Chat extends Model {
     
     static associate(models) {
-      Chat.belongsTo(models.Character,{
+      Chat.belongsTo(models.AiCharacter,{
         foreignKey:"character_id",
-        as:"Character"
+        as:"AiCharacter"
       })
     }
   }

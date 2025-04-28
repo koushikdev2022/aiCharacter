@@ -7,9 +7,9 @@ module.exports = (sequelize, DataTypes) => {
   class GroupAiMessage extends Model {
     
     static associate(models) {
-      GroupAiMessage.belongsTo(models.Character,{
+      GroupAiMessage.belongsTo(models.AiCharacter,{
             foreignKey:"character_id",
-            as:"Character"
+            as:"AiCharacter"
       })
       GroupAiMessage.belongsTo(models.Group,{
         foreignKey:"group_id",

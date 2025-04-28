@@ -7,7 +7,33 @@ module.exports = (sequelize, DataTypes) => {
   class AiCharacter extends Model {
     
     static associate(models) {
-      
+      AiCharacter.belongsTo(models.User,{
+        foreignKey:"user_id",
+        as:"User"
+      })
+      AiCharacter.hasMany(models.Chat,{
+        foreignKey:"character_id",
+        as:"Chat"
+      })
+      AiCharacter.belongsToMany(models.Voice,{
+        foreignKey:"character_id",
+        as:"Voice",
+        through:models.CharacterVoiceMap
+      })
+      AiCharacter.belongsToMany(models.Tag,{
+        foreignKey:"character_id",
+        as:"Tag",
+        through:models.CharacterTagMap
+      })
+      AiCharacter.belongsToMany(models.Group,{
+        foreignKey:"character_id",
+        as:"Group",
+        through:models.GroupMap
+    })
+    AiCharacter.hasMany(models.GroupAiMessage,{
+        foreignKey:"character_id",
+        as:"GroupAiMessage",
+      })
     }
   }
   AiCharacter.init({

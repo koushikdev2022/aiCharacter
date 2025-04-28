@@ -7,9 +7,9 @@ module.exports = (sequelize, DataTypes) => {
   class Voice extends Model {
     
     static associate(models) {
-        Voice.belongsToMany(models.Character,{
+        Voice.belongsToMany(models.AiCharacter,{
             foreignKey:"voice_id",
-            as:"Character",
+            as:"AiCharacter",
             through:models.CharacterVoiceMap
           })
     }

@@ -7,9 +7,9 @@ module.exports = (sequelize, DataTypes) => {
   class Tag extends Model {
     
     static associate(models) {
-      Tag.belongsToMany(models.Character,{
+      Tag.belongsToMany(models.AiCharacter,{
         foreignKey:"tags_id",
-        as:"Character",
+        as:"AiCharacter",
         through:models.CharacterTagMap
       })
     }

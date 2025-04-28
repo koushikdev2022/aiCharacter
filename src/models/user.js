@@ -8,9 +8,9 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     
     static associate(models) {
-        User.hasMany(models.Character,{
+        User.hasMany(models.AiCharacter,{
           foreignKey:"user_id",
-          as:"Character"
+          as:"AiCharacter"
         })
         User.hasMany(models.Group,{
           foreignKey:"user_id",
