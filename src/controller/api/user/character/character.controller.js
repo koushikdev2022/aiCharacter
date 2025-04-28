@@ -1,5 +1,5 @@
 
-const {User,Character,CopyCharacterUser,Image,Subscription,Plan,Chat,Voice,CharacterVoiceMap,GroupAiMessage,Tag,GroupMap,CharacterTagMap,Group} = require("../../../../models");
+const {User,AiCharacter,CopyCharacterUser,Image,Subscription,Plan,Chat,Voice,CharacterVoiceMap,GroupAiMessage,Tag,GroupMap,CharacterTagMap,Group} = require("../../../../models");
 const groupAiMessage = require("../../../../models/groupAiMessage");
 const {Op} = require('sequelize')
 
@@ -552,7 +552,7 @@ exports.list = async(req,res) =>{
         }
         query.where.user_id = id
         query.where.is_active = 1
-        query.where.is_completed = 1
+        // query.where.is_completed = 1
         query.where.is_deleted = 0
         if(type){
             query.where.type = type
@@ -563,14 +563,14 @@ exports.list = async(req,res) =>{
         if(char_id){
             query.where.id = char_id
         }
-        const characterCount = await Character.count({
+        const characterCount = await AiCharacter.count({
             where: query.where,
             distinct: true,
           })
         const offset = (page -1 ) * limit
         query.limit=limit,
         query.offset=offset
-        const character = await Character.findAll(query)
+        const character = await AiCharacter.findAll(query)
 
         if(character){
             res.status(200).json({
