@@ -1,4 +1,4 @@
-const {AiCharacter} = require("../../../../models");
+const {AiCharacter,CharacterDetail} = require("../../../../models");
 const {Op} = require('sequelize')
 
 const characterUniqueId = () => {
