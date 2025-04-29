@@ -16,9 +16,9 @@ const thirdStep = async (req, res, next) => {
             .exists()
             .withMessage('character_id is required'),
         
-        body('google_link')
-            .exists()
-            .withMessage('google_link is required')
+        // body('google_link')
+        //     .exists()
+        //     .withMessage('google_link is required')
         
         ];
 
