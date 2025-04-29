@@ -109,3 +109,39 @@ exports.publishCharacter = async(req,res)=>{
         })
     }
 }
+
+exports.publishCharacterDetail = async(req,res) =>{
+    try{
+        const payload = req?.body;
+        if(!payload?.character_detail_id){
+            return res.status(422).json({
+                status:false,
+                message:'character_detail_id cannot be left blank',
+                status_code:422
+            })
+        }
+        const updateCharDetail = await CharacterDetail.update({is_published:1},{where:{id:payload?.character_detail_id}});
+        if(updateCharDetail>0){
+            return res.status(200).json({
+                status:true,
+                message:'Published successfully',
+                status_code:200
+            })
+        }else{
+            return res.status(400).json({
+                status:true,
+                message:'Unable to update',
+                status_code:400
+            })
+        }
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}

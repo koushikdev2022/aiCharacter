@@ -141,6 +141,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: 0,
     },
+    character_details_name:{
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
+    character_details_description:{
+      allowNull: true,
+      type: DataTypes.TEXT('long'),
+    },
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,

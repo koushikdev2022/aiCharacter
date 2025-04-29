@@ -206,8 +206,11 @@ exports.createCharacterStep3 = async(req,res)=>{
 exports.createCharacterStep4 = async(req,res)=>{
     try{
         const payload = req?.body;
+        const getCharDetail = await CharacterDetail.findOne({where:{id:payload?.character_detail_id}});
         const updateStep4 = await AiCharacter.update({
             avatar:payload?.avatar_link,
+            character_details_name:getCharDetail?.avatar_name,
+            character_details_description:getCharDetail?.avatar_description,
             is_active:1
         },{
             where:{

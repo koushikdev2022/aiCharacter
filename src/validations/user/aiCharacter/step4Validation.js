@@ -11,7 +11,10 @@ const forthStep = async (req, res, next) => {
             .withMessage('avatar_link is required'),
         body('character_id')
             .exists()
-            .withMessage('character_id is required')
+            .withMessage('character_id is required'),
+        body('character_detail_id')
+            .exists()
+            .withMessage('character_detail_id is required')
         
         ];
 

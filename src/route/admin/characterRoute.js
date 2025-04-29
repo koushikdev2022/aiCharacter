@@ -6,4 +6,5 @@ const characterController = require("../../controller/api/admin/character/charac
 characterRoute.post('/create-character',characterDetailUpload.single('character_image'),characterController.createCharacter);
 characterRoute.post('/list',characterController.list);
 characterRoute.post('/publish-character',characterController.publishCharacter);
+characterRoute.post('/publish-character-detail',characterController.publishCharacterDetail);
 module.exports = characterRoute;

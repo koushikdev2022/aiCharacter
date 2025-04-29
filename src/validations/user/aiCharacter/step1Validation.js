@@ -8,26 +8,10 @@ const firstStep = async (req, res, next) => {
     const validationRules = [
         body('company_name')
             .exists()
-            .withMessage('company_name is required')
-            .custom(async (value) => {
-                if (value) {
-                    const isExist = await AiCharacter.findOne({
-                        where: { company_name: value },
-                    });
-                    if (isExist) throw new Error("company name already exist");
-                }
-            }),
+            .withMessage('company_name is required'),
         body('company_website_url')
             .exists()
-            .withMessage('company_website_url is required')
-            .custom(async (value) => {
-                if (value) {
-                    const isExist = await AiCharacter.findOne({
-                        where: { website: value },
-                    });
-                    if (isExist) throw new Error("website already exist");
-                }
-            }),
+            .withMessage('company_website_url is required'),
         body('product_service')
             .exists()
             .withMessage('product_service is required'),
