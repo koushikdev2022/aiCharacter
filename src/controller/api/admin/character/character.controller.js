@@ -1,0 +1,73 @@
+const {CharacterDetail} = require("../../../../models");
+
+exports.createCharacter = async(req,res)=>{
+    try{
+        const payload = req?.body;
+        if (!req.file) {
+            return res.status(422).json({
+                status:false,
+                message:"Please upload the file",
+                status_code:422
+            })
+        }else{
+            const filePath = `uploads/character_details/${req.file.filename}`;
+            const createCharacter = await CharacterDetail.create({
+                avatar_name:payload?.avatar_name,
+                avatar:filePath,
+                avatar_description:payload?.avatar_description,
+                is_active:1,
+                is_published:0
+            });
+            if(createCharacter.id>0){
+                return res.status(201).json({
+                    status:true,
+                    message:"Created Successfully",
+                    status_code:201
+                })
+            }else{
+                return res.status(400).json({
+                    status:false,
+                    message:"Unable to create",
+                    status_code:400
+                })
+            }
+        }
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}
+
+exports.list = async(req,res)=>{
+    try{
+        const payload = req?.body;
+        const characters = await CharacterDetail.findAll({where:{is_published:1},order:[['created_at','desc']]});
+        const character_arr = characters.map(character=>{
+            return {
+                id:character.id,
+                name:character.avatar_name,
+                avatar:`${payload?.base_url}${character.avatar}`
+            }
+        })
+        return res.status(200).json({
+            status:true,
+            res:character_arr,
+            status_code:200
+        })
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}

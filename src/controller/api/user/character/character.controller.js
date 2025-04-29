@@ -552,7 +552,7 @@ exports.list = async(req,res) =>{
         }
         query.where.user_id = id
         query.where.is_active = 1
-        // query.where.is_completed = 1
+        query.where.is_published = 1
         query.where.is_deleted = 0
         if(type){
             query.where.type = type
