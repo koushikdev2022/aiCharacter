@@ -11,4 +11,5 @@ aiCharacterRoute.post('/create-character-step1',isUserAuthenticateMiddleware,ste
 aiCharacterRoute.post('/create-character-step2',isUserAuthenticateMiddleware,step2Validation,aiCharacterController.createCharacterStep2);
 aiCharacterRoute.post('/create-character-step3',isUserAuthenticateMiddleware,step3Validation,aiCharacterController.createCharacterStep3);
 aiCharacterRoute.post('/create-character-step4',isUserAuthenticateMiddleware,step4Validation,aiCharacterController.createCharacterStep4);
+aiCharacterRoute.post('/list',isUserAuthenticateMiddleware,aiCharacterController.list);
 module.exports = aiCharacterRoute

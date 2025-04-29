@@ -7,6 +7,34 @@ const characterUniqueId = () => {
     return `${randomNo}-${timestamp}`; 
 };
 
+exports.list = async(req,res)=>{
+    try{
+        const payload = req?.body;
+        const characters = await CharacterDetail.findAll({where:{is_published:1},order:[['created_at','desc']]});
+        const character_arr = characters.map(character=>{
+            return {
+                id:character.id,
+                name:character.avatar_name,
+                avatar:`${payload?.base_url}${character.avatar}`
+            }
+        })
+        return res.status(200).json({
+            status:true,
+            res:character_arr,
+            status_code:200
+        })
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}
+
 exports.createCharacterStep1 = async(req,res)=>{
     try{
         const payload=req?.body;
