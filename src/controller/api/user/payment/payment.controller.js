@@ -1,5 +1,5 @@
-const {Transaction,Wallet,User,Plan,UserAddress} = require("../../../../models")
-const Stripe = require('stripe');
+const {Transaction,Wallet,User,Plan,UserAddress,SubscriptionModel} = require("../../../../models")
+const Stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const paypal = require('@paypal/checkout-server-sdk');
 const { PayPalClient } = require('../../../../helper/paypalHelper'); 
 
@@ -396,4 +396,54 @@ exports.walletDeduct = async(req,res)=>{
         })
     }
        
+}
+
+exports.createSubscription = async (req,res) =>{
+    try{
+            const payload = req?.body
+            const email = req?.user?.email
+            if(!payload?.plan_id){
+                return res.status(422).json({
+                    message:"plan id is required",
+                    status:true,
+                    status_code:422
+                })
+            }
+            const plan_data = await Plan.findByPk(payload?.plan_id)
+            const customer = await Stripe.customers.create({
+                email,
+                payment_method: "pm_card_visa",
+                invoice_settings: {
+                  default_payment_method: "pm_card_visa",
+                },
+            });
+            const customer_id = customer?.id
+            const plan_k = plan_data?.plan_key
+            const subscription = await Stripe.subscriptions.create({
+                customer: customer_id,
+                items: [{ price: plan_k }],
+                payment_behavior: 'default_incomplete',
+                expand: ['latest_invoice.payment_intent'],
+            });
+            const paymentIntent = subscription.latest_invoice.payment_intent;
+            const subscriptionId = subscription.id;
+            const clientSecret = paymentIntent.client_secret;
+            return res.status(200).json({
+                message:"subscription successfully",
+                paymentIntent:paymentIntent,
+                subscriptionId:subscriptionId,
+                clientSecret:clientSecret,
+                customer_id:customer_id,
+                stripe_publish:process.env.STRIPE_PUBLISHABLE_KEY,
+            })
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
 }
