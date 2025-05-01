@@ -532,3 +532,44 @@ exports.completePayment = async(req,res) =>{
         })
     }
 }
+
+exports.plan = async(req,res)=>{
+    try{
+            const userId = req?.user?.id
+            const query = {
+                where:{},
+                include:[
+                   {
+                    model:SubscriptionModel,
+                    as:"SubscriptionModel",
+                    require:false,
+                    include:[{
+                        model:Plan,
+                        as:"Plan",
+                        require:false,
+                    }]
+                   } 
+                ],
+                order: [[{ model: SubscriptionModel, as: 'SubscriptionModel' }, 'id', 'DESC']]
+            }
+            query.where = {
+                id:userId
+            }
+            const userData = await User.findAll(query); 
+            return res.status(200).json({
+                message:"data found",
+                status:true,
+                status_code:200,
+                data:userData
+            })
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}
