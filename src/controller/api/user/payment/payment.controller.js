@@ -573,3 +573,32 @@ exports.plan = async(req,res)=>{
         })
     }
 }
+
+
+exports.cancel = async(req,res)=>{
+    try{
+        const payload = req?.body
+        if(!payload?.subscription_id){
+            return res.status(422).json({
+                message:"subscription_id is require",
+                status:false,
+                status_code:422
+            })
+        }
+        const deletedSubscription = await Stripe.subscriptions.del(payload?.subscription_id);
+        return res.status(200).json({
+            message:"cancel successfully",
+            status:true,
+            status_code:200,
+        })
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}
