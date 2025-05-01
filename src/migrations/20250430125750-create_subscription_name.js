@@ -28,22 +28,22 @@ module.exports = {
       },
       stripe_subscription_type: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
         comment: "trial or main"
       },
       stripe_subscription_start_date: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
         comment: "start date", // Replace with your actual enum values
       },
       stripe_subscription_end_date: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
         comment: "end date", // Replace with your actual enum values
       },
       subscription_type: {
         type: Sequelize.TINYINT,
-        allowNull: false,
+        allowNull: true,
         defaultValue:1,
         comment: "1 for active, 2 for cancel", // Replace with your actual enum values
       },

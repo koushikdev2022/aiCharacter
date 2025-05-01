@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
       user_id: DataTypes.BIGINT,
+      plan_id:DataTypes.BIGINT,
       stripe_payment_key: DataTypes.STRING,
       customer_stripe_id: DataTypes.STRING,
       stripe_subscription_type: DataTypes.STRING,

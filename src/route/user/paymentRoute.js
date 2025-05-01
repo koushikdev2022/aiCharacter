@@ -19,6 +19,6 @@ paymentRoute.get('/wallet-deduct',paymentController.walletDeduct)
 
 
 paymentRoute.post('/create-intend',paymentController.createSubscription)
-
+paymentRoute.post('/complete-payment',paymentController.completePayment)
 
 module.exports = paymentRoute

@@ -447,3 +447,88 @@ exports.createSubscription = async (req,res) =>{
         })
     }
 }
+
+
+
+exports.completePayment = async(req,res) =>{
+    try{
+            const payload = req?.body
+            
+            if(!payload?.subscription_id){
+                return res.status(422).json({
+                    message:"subscription_id is require",
+                    status:false,
+                    status_code:422
+                })
+            }
+            if(!payload?.secret_key){
+                return res.status(422).json({
+                    message:"secret_key is require",
+                    status:false,
+                    status_code:422
+                })
+                
+            }
+            if(!payload?.plan_id){
+                return res.status(422).json({
+                    message:"plan_id is require",
+                    status:false,
+                    status_code:422
+                })
+            }
+            if(!payload?.cust_id){
+                return res.status(422).json({
+                    message:"cust_id is require",
+                    status:false,
+                    status_code:422
+                })
+            }
+            const planData = await Plan.findByPk(payload?.plan_id)
+            const subscription = await Stripe.subscriptions.retrieve(payload?.subscription_id);
+            const subscriptionStatus  = subscription?.status
+            if(subscriptionStatus == "success"){
+                const create = await SubscriptionModel.create({
+                    user_id: req?.user?.id,
+                    plan_id:payload?.plan_id,
+                    stripe_payment_key:payload?.secret_key,
+                    customer_stripe_id: payload?.cust_id,
+                    stripe_subscription_type: payload?.subscription_id,
+                    stripe_subscription_start_date: new Date(), 
+                    stripe_subscription_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    subscription_type: 1, 
+                    status: 1, 
+                    created_at: new Date(),
+                    updated_at: new Date()
+                  });
+                  if(create?.id > 0 ){
+                    return res.status(201).json({
+                        message:"subscription created successfully",
+                        status:true,
+                        status_code:201
+                    })
+                  }else{
+                    return res.status(400).json({
+                        message:"subscription failed",
+                        status:false,
+                        status_code:400
+                    })
+                  }
+            }else{
+                return res.status(400).json({
+                    message:"payment not granted if deduct contract to admin",
+                    status:false,
+                    status_code:400
+                })
+            }
+           
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}
