@@ -47,7 +47,7 @@ const defaultRoutes = [
     {
         prefix: "/plan",
         route: planRoute,
-        middleware:isUserAuthenticateMiddleware
+        // middleware:isUserAuthenticateMiddleware
     },
     {
         prefix: "/payment",
