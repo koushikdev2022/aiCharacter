@@ -1,5 +1,5 @@
-const {Transaction,Wallet,User,Plan,UserAddress} = require("../../../../models")
-const Stripe = require('stripe');
+const {Transaction,Wallet,User,Plan,UserAddress,SubscriptionModel} = require("../../../../models")
+const Stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const paypal = require('@paypal/checkout-server-sdk');
 const { PayPalClient } = require('../../../../helper/paypalHelper'); 
 
@@ -396,4 +396,209 @@ exports.walletDeduct = async(req,res)=>{
         })
     }
        
+}
+
+exports.createSubscription = async (req,res) =>{
+    try{
+            const payload = req?.body
+            const email = req?.user?.email
+            if(!payload?.plan_id){
+                return res.status(422).json({
+                    message:"plan id is required",
+                    status:true,
+                    status_code:422
+                })
+            }
+            const plan_data = await Plan.findByPk(payload?.plan_id)
+            const customer = await Stripe.customers.create({
+                email,
+                payment_method: "pm_card_visa",
+                invoice_settings: {
+                  default_payment_method: "pm_card_visa",
+                },
+            });
+            const customer_id = customer?.id
+            const plan_k = plan_data?.plan_key
+            const subscription = await Stripe.subscriptions.create({
+                customer: customer_id,
+                items: [{ price: plan_k }],
+                payment_behavior: 'default_incomplete',
+                expand: ['latest_invoice.payment_intent'],
+            });
+            const paymentIntent = subscription.latest_invoice.payment_intent;
+            const subscriptionId = subscription.id;
+            const clientSecret = paymentIntent.client_secret;
+            return res.status(200).json({
+                message:"subscription successfully",
+                paymentIntent:paymentIntent,
+                subscriptionId:subscriptionId,
+                clientSecret:clientSecret,
+                customer_id:customer_id,
+                stripe_publish:process.env.STRIPE_PUBLISHABLE_KEY,
+            })
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}
+
+
+
+exports.completePayment = async(req,res) =>{
+    try{
+            const payload = req?.body
+            
+            if(!payload?.subscription_id){
+                return res.status(422).json({
+                    message:"subscription_id is require",
+                    status:false,
+                    status_code:422
+                })
+            }
+            if(!payload?.secret_key){
+                return res.status(422).json({
+                    message:"secret_key is require",
+                    status:false,
+                    status_code:422
+                })
+                
+            }
+            if(!payload?.plan_id){
+                return res.status(422).json({
+                    message:"plan_id is require",
+                    status:false,
+                    status_code:422
+                })
+            }
+            if(!payload?.cust_id){
+                return res.status(422).json({
+                    message:"cust_id is require",
+                    status:false,
+                    status_code:422
+                })
+            }
+            const planData = await Plan.findByPk(payload?.plan_id)
+            const subscription = await Stripe.subscriptions.retrieve(payload?.subscription_id);
+            const subscriptionStatus  = subscription?.status
+            if(subscriptionStatus == "success"){
+                const create = await SubscriptionModel.create({
+                    user_id: req?.user?.id,
+                    plan_id:payload?.plan_id,
+                    stripe_payment_key:payload?.secret_key,
+                    customer_stripe_id: payload?.cust_id,
+                    stripe_subscription_type: payload?.subscription_id,
+                    stripe_subscription_start_date: new Date(), 
+                    stripe_subscription_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    subscription_type: 1, 
+                    status: 1, 
+                    created_at: new Date(),
+                    updated_at: new Date()
+                  });
+                  if(create?.id > 0 ){
+                    return res.status(201).json({
+                        message:"subscription created successfully",
+                        status:true,
+                        status_code:201
+                    })
+                  }else{
+                    return res.status(400).json({
+                        message:"subscription failed",
+                        status:false,
+                        status_code:400
+                    })
+                  }
+            }else{
+                return res.status(400).json({
+                    message:"payment not granted if deduct contract to admin",
+                    status:false,
+                    status_code:400
+                })
+            }
+           
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}
+
+exports.plan = async(req,res)=>{
+    try{
+            const userId = req?.user?.id
+            const query = {
+                where:{},
+                include:[
+                   {
+                    model:SubscriptionModel,
+                    as:"SubscriptionModel",
+                    require:false,
+                    include:[{
+                        model:Plan,
+                        as:"Plan",
+                        require:false,
+                    }]
+                   } 
+                ],
+                order: [[{ model: SubscriptionModel, as: 'SubscriptionModel' }, 'id', 'DESC']]
+            }
+            query.where = {
+                id:userId
+            }
+            const userData = await User.findAll(query); 
+            return res.status(200).json({
+                message:"data found",
+                status:true,
+                status_code:200,
+                data:userData
+            })
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
+}
+
+
+exports.cancel = async(req,res)=>{
+    try{
+        const payload = req?.body
+        if(!payload?.subscription_id){
+            return res.status(422).json({
+                message:"subscription_id is require",
+                status:false,
+                status_code:422
+            })
+        }
+        const deletedSubscription = await Stripe.subscriptions.del(payload?.subscription_id);
+        return res.status(200).json({
+            message:"cancel successfully",
+            status:true,
+            status_code:200,
+        })
+    }catch (err) {
+        console.log("Error in login authController: ", err);
+        const status = err?.status || 400;
+        const msg = err?.message || "Internal Server Error";
+        return res.status(status).json({
+            msg,
+            status: false,
+            status_code: status
+        })
+    }
 }
