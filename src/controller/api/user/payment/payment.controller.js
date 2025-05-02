@@ -486,7 +486,7 @@ exports.completePayment = async(req,res) =>{
             const planData = await Plan.findByPk(payload?.plan_id)
             const subscription = await Stripe.subscriptions.retrieve(payload?.subscription_id);
             const subscriptionStatus  = subscription?.status
-            if(subscriptionStatus == "success"){
+            
                 const create = await SubscriptionModel.create({
                     user_id: req?.user?.id,
                     plan_id:payload?.plan_id,
@@ -513,13 +513,7 @@ exports.completePayment = async(req,res) =>{
                         status_code:400
                     })
                   }
-            }else{
-                return res.status(400).json({
-                    message:"payment not granted if deduct contract to admin",
-                    status:false,
-                    status_code:400
-                })
-            }
+          
            
     }catch (err) {
         console.log("Error in login authController: ", err);
